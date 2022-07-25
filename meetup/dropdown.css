@@ -1,0 +1,93 @@
+* {
+  margin: 0%;
+}
+.select-menu {
+  max-width: 330px;
+  /* margin: 50px auto; */
+}
+.select-menu .select-btn {
+  display: flex;
+  height: auto;
+  width: 14rem;
+  background: #fff;
+  padding: 11px 15px;
+  font-size: 14px;
+  font-weight: 400;
+  border: 1px solid #d1d1d1;
+  border-radius: 6px;
+  align-items: center;
+  cursor: pointer;
+  justify-content: space-between;
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
+  overflow: hidden;
+}
+.select-btn i {
+  font-size: 25px;
+  transition: 0.3s;
+}
+.select-menu.active .select-btn i {
+  transform: rotate(-180deg);
+}
+.select-menu .options {
+  position: relative;
+  padding: 0px;
+  /* margin-top: 10px; */
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  overflow-y: auto;
+  height: 15vh;
+}
+.select-menu.active .options {
+  display: block;
+  opacity: 0;
+  width: 14rem;
+  animation-name: fadeInUp;
+  -webkit-animation-name: fadeInUp;
+  animation-duration: 0.4s;
+  animation-fill-mode: both;
+  -webkit-animation-duration: 0.2s;
+  -webkit-animation-fill-mode: both;
+}
+.options .option {
+  display: flex;
+  height: auto;
+  cursor: pointer;
+  padding: 5px 32px;
+  /* border-radius: 8px; */
+  align-items: center;
+  background: #fff;
+  margin: 0;
+}
+.options .option:hover {
+  background: #f2f2f2;
+}
+.option i {
+  font-size: 25px;
+  margin-right: 12px;
+}
+.option .option-text {
+  font-size: 14px;
+  color: #333;
+}
+
+@keyframes fadeInUp {
+  from {
+    /* transform: translate3d(0, 30px, 0); */
+    -webkit-transform-origin: top;
+    -o-transform-origin: top;
+    -ms-transform-origin: top;
+    transform-origin: top;
+    transform: scaleY(0);
+  }
+  to {
+    /* transform: translate3d(0, 0, 0); */
+    -webkit-transform-origin: top;
+    -o-transform-origin: top;
+    -ms-transform-origin: top;
+    transform-origin: top;
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}

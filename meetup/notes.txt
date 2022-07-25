@@ -1,0 +1,60 @@
+workflow:
+1. when you visit the provided link or make any changes to the filter, all the events will be loaded by scrolling automatically.
+
+
+
+2. Now, after loading all the events on this page =>
+(A). Each event will additionally contain two button
+"add group to blacklist" and
+"add group to favorites"
+(B). events from blacklisted groups will be removed
+(C). events from favorite groups will be highlighted
+
+
+
+3. a text box to filter N attendees
+
+
+//////// automatically scroll till all feed is loaded 
+
+var lastScrollHeight = 0; 
+function autoScroll() { 
+  var sh = document.documentElement.scrollHeight; 
+  if (sh != lastScrollHeight) { 
+    lastScrollHeight = sh; 
+    document.documentElement.scrollTop = sh; 
+  } 
+} 
+window.setInterval(autoScroll, 5000);
+
+
+
+
+
+
+
+
+
+
+//// check if viewed
+function isInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+
+
+
+///// all the events =>
+const allEvents =  document.getElementById('main').childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0]
+let   noOfEvents = allEvents.children.length;
+const groupName = element.getElementsByTagName("p")[1].innerText;
+const noOfAttendee =
+            element.querySelectorAll(".hidden").length < 3
+              ? element.querySelectorAll(".hidden")[1].innerText
+              : element.querySelectorAll(".hidden")[2].innerText;
