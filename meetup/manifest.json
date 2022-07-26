@@ -3,17 +3,13 @@
   "version": "0.1.0",
   "description": "customize meetup events for lucian",
   "permissions": ["storage", "tabs"],
-  "host_permissions": [
-    "https://www.meetup.com/find/?source=EVENTS&dateRange=this-week&eventType=inPerson&distance=twoMiles"
-  ],
+  "host_permissions": ["https://www.meetup.com/find/*"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://www.meetup.com/find/?source=EVENTS&dateRange=this-week&eventType=inPerson&distance=twoMiles"
-      ],
+      "matches": ["https://www.meetup.com/find/*"],
       "js": ["contentScript.js"],
       "css": ["dropdown.css"],
       "all_frames": true,
