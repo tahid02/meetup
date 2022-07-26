@@ -12,6 +12,9 @@ function isInViewport(element) {
 
 //////////////////////////////////////////////////////////////// event data  /////////////////////////////////////////////////////////////
 const getEventInfo = (eventElement) => {
+  // is favorite event
+  let isFavorite;
+  let isBlackListed;
   //  group name
   const groupName = eventElement
     .getElementsByTagName("p")[1]
@@ -23,9 +26,30 @@ const getEventInfo = (eventElement) => {
       ? eventElement.querySelectorAll(".hidden")[1].innerText
       : eventElement.querySelectorAll(".hidden")[2].innerText;
 
-  // is favorite event
-  let isFavorite;
   console.log({ groupName });
+  chrome.storage.sync.get("allList", (list) => {
+    if (obj.allList.length) {
+      const blacklisted = obj.allList.filter((event) =>
+        event.listType.toLowerCase().includes("blacklist")
+      );
+      console.log(blacklisted);
+      blacklisted.map((black) => {
+        // console.log(favE.groupName.toLowerCase());
+        // console.log(groupName.toLowerCase());
+        isBlackListed =
+          black.groupName.toLowerCase() === groupName.toLowerCase();
+        console.log(isFavorite);
+        console.log(black.groupName.toLowerCase() === groupName.toLowerCase());
+        if (isBlackListed) {
+          console.log(black);
+          eventElement.style.border = "5px solid red";
+          eventElement.style.display = "none";
+        }
+        return "isFavorite";
+      });
+    }
+  });
+
   chrome.storage.sync.get("allList", (obj) => {
     if (obj.allList.length) {
       const fav = obj.allList.filter((event) =>
@@ -48,7 +72,6 @@ const getEventInfo = (eventElement) => {
   });
 
   // is blackListed event
-  const isBlackListed = false;
 
   return { groupName, noOfAttendee, isFavorite, isBlackListed };
 };
