@@ -9,6 +9,7 @@ function isInViewport(element) {
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 }
+////////////////////////////////////////////////////////////////////// add to favorite btn clicked///////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////// event data  /////////////////////////////////////////////////////////////
 
@@ -95,6 +96,12 @@ const createButton = (btnText, eventInfo, eventElement) => {
   btnElement.style.borderRadius = "40px ";
   btnElement.style.color = "white ";
   btnElement.style.marginRight = ".5rem";
+  if (btnText.toLowerCase.includes("favorite")) {
+    btnElement.setAttribute("class", "favorite");
+  } else if (btnText.toLowerCase.includes("blacklist")) {
+    btnElement.setAttribute("class", "blacklist");
+  }
+  btnElement.setAttribute("class", btnText.split(" ")[2]); // favorite or blacklist
 
   const buttonText = document.createTextNode(btnText);
   btnElement.appendChild(buttonText);
