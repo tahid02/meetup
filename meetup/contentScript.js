@@ -11,6 +11,16 @@ function isInViewport(element) {
 }
 
 //////////////////////////////////////////////////////////////// event data  /////////////////////////////////////////////////////////////
+
+//////////////////////////create search ////////////////////////////////////
+const createSearch = () => {
+  const attendeeSearchDiv = document.createElement("div");
+  attendeeSearchDiv.innerHTML = `    <input id="attendeeInput" type="text" placeholder="" value="10" />
+  <button id="attendeeSearch" style="border:3px solid black">
+   search
+  </button>`;
+  return attendeeSearchDiv;
+};
 const getEventInfo = (eventElement) => {
   // is favorite event
   let isFavorite;
@@ -25,25 +35,25 @@ const getEventInfo = (eventElement) => {
     eventElement.querySelectorAll(".hidden").length < 3
       ? eventElement.querySelectorAll(".hidden")[1].innerText
       : eventElement.querySelectorAll(".hidden")[2].innerText;
+  console.log("at", noOfAttendee);
+  if (noOfAttendee.split(" ")[0] < 10) {
+    eventElement.style.border = "5px solid blue";
+  }
 
-  console.log({ groupName });
-  chrome.storage.sync.get("allList", (list) => {
+  // console.log({ groupName });
+  chrome.storage.sync.get("allList", (obj) => {
     if (obj.allList.length) {
       const blacklisted = obj.allList.filter((event) =>
         event.listType.toLowerCase().includes("blacklist")
       );
-      console.log(blacklisted);
+      // console.log(blacklisted);
       blacklisted.map((black) => {
-        // console.log(favE.groupName.toLowerCase());
-        // console.log(groupName.toLowerCase());
         isBlackListed =
           black.groupName.toLowerCase() === groupName.toLowerCase();
-        console.log(isFavorite);
-        console.log(black.groupName.toLowerCase() === groupName.toLowerCase());
         if (isBlackListed) {
-          console.log(black);
+          // console.log(black);
           eventElement.style.border = "5px solid red";
-          eventElement.style.display = "none";
+          // eventElement.style.display = "none";
         }
         return "isFavorite";
       });
@@ -60,13 +70,13 @@ const getEventInfo = (eventElement) => {
         // console.log(favE.groupName.toLowerCase());
         // console.log(groupName.toLowerCase());
         isFavorite = favE.groupName.toLowerCase() === groupName.toLowerCase();
-        console.log(isFavorite);
+        // console.log(isFavorite);
         console.log(favE.groupName.toLowerCase() === groupName.toLowerCase());
         if (isFavorite) {
-          console.log(favE);
+          // console.log(favE);
           eventElement.style.border = "5px solid yellow";
         }
-        return "isFavorite";
+        return "isBacklists";
       });
     }
   });
@@ -77,7 +87,7 @@ const getEventInfo = (eventElement) => {
 };
 
 /////////////////////////////////////////////////////////////// create button element  /////////////////////////////////////////////////////////////
-const createButton = (btnText, eventInfo) => {
+const createButton = (btnText, eventInfo, eventElement) => {
   const btnElement = document.createElement("button");
   btnElement.style.backgroundColor = "#f65858";
   btnElement.style.border = "none";
@@ -109,6 +119,11 @@ const createButton = (btnText, eventInfo) => {
           function () {
             console.log("hello preset old");
             // allPreset();
+            if (btnText.toLowerCase().includes("favorite")) {
+              eventElement.style.border = "5px solid yellow";
+            } else if (btnText.toLowerCase().includes("blacklist")) {
+              eventElement.style.border = "5px solid red";
+            }
           }
         );
       } else {
@@ -125,6 +140,11 @@ const createButton = (btnText, eventInfo) => {
           function () {
             console.log("hello preset");
             // allPreset();
+            if (btnText.toLowerCase().includes("favorite")) {
+              eventElement.style.border = "5px solid yellow";
+            } else if (btnText.toLowerCase().includes("blacklist")) {
+              eventElement.style.border = "5px solid red";
+            }
           }
         );
       }
@@ -138,8 +158,16 @@ const createAddAndFavoriteBtn = (eventElement, eventInfo) => {
   btnDiv.style.display = "flex";
   btnDiv.style.justifyContent = "end";
   btnDiv.style.paddingBottom = "10px";
-  const addToFavoriteBtn = createButton("Add to Favorite", eventInfo);
-  const addToBlackListBtn = createButton("Add to BlackList", eventInfo);
+  const addToFavoriteBtn = createButton(
+    "Add to Favorite",
+    eventInfo,
+    eventElement
+  );
+  const addToBlackListBtn = createButton(
+    "Add to BlackList",
+    eventInfo,
+    eventElement
+  );
 
   btnDiv.appendChild(addToFavoriteBtn);
   btnDiv.appendChild(addToBlackListBtn);
@@ -159,13 +187,40 @@ function myMain(evt) {
     if (allLoaded) {
       console.log("loaded");
       clearInterval(autoLoad);
-
+      window.scrollTo(0, 0);
+      const attendeeSearchDiv = createSearch();
+      document
+        .getElementById("find-events-tab")
+        .parentNode.appendChild(attendeeSearchDiv);
       const allEvents =
         document.getElementById("main").childNodes[0].childNodes[1]
           .childNodes[0].childNodes[0].childNodes[0];
       // no of events
       let noOfEvents = allEvents.children.length;
+      let searchBtn = document.getElementById("attendeeSearch");
+      console.log(searchBtn);
+      searchBtn.addEventListener("click", function () {
+        console.log("clicked");
+        for (let i = 0; i <= noOfEvents; i++) {
+          const eventElement = allEvents.childNodes[i];
 
+          const noOfAttendee =
+            eventElement.querySelectorAll(".hidden").length < 3
+              ? eventElement
+                  .querySelectorAll(".hidden")[1]
+                  .innerText.split(" ")[0]
+              : eventElement
+                  .querySelectorAll(".hidden")[2]
+                  .innerText.split(" ")[0];
+          console.log("value", document.getElementById("attendeeInput").value);
+          console.log("attendee", noOfAttendee);
+
+          if (noOfAttendee < document.getElementById("attendeeInput").value) {
+            console.log("should display none");
+            eventElement.style.display = "none";
+          }
+        }
+      });
       for (let i = 0; i <= noOfEvents; i++) {
         const eventElement = allEvents.childNodes[i];
 

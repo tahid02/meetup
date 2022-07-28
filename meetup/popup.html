@@ -9,101 +9,20 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body style="min-width: 500px; margin: 0; padding: 1rem">
-    <div class="container">
-      <div>
-        <!-- input filed start -->
-        <div id="preset_create_input">
-          <label style="font-size: 14px; font-weight: 400">Preset Name</label>
-          <br />
-          <input
-            type="text"
-            name="preset_name"
-            id="preset_name"
-            style="width: 400px; padding: 0.5rem 1rem; font-size: 1rem"
-          />
-          <br />
-          <br />
-          <label style="font-size: 14px; font-weight: 400">Cover Letter </label>
-          <br />
-          <textarea
-            type="text"
-            name="preset_description"
-            id="preset_description"
-            style="
-              width: 500px;
-              height: 300px;
-              padding: 0.5rem 1rem;
-              font-size: 1rem;
-            "
-          ></textarea>
-          <div class="select-btn"></div>
-          <div style="text-align: center">
-            <button
-              id="add_preset"
-              style="
-                margin-top: 1rem;
-                cursor: pointer;
-                background-color: #14a800;
-                border: none;
-                padding: 12px 29px;
-                width: 40vw;
-                font-size: 14px;
-                font-weight: 400;
-                border-radius: 10rem;
-                color: white;
-              "
-            >
-              Add a preset
-            </button>
-          </div>
-        </div>
-        <!-- create  a preset start -->
-        <div style="display: flex; justify-content: center">
-          <div style="text-align: center">
-            <button
-              id="create_preset"
-              style="
-                cursor: pointer;
-                background-color: #14a800;
-                border: none;
-                padding: 12px 29px;
-                width: 40vw;
-                font-size: 14px;
-                font-weight: 400;
-                border-radius: 10rem;
-                color: white;
-              "
-            >
-              Create a preset
-            </button>
-          </div>
-        </div>
-        <!-- create a preset end -->
-
-        <div style="text-align: center">
-          <button
-            id="manage_preset"
-            style="
-              margin-top: 5px;
-              cursor: pointer;
-              background-color: #14a800;
-              border: none;
-              padding: 12px 29px;
-              width: 40vw;
-              font-size: 14px;
-              font-weight: 400;
-              border-radius: 10rem;
-              color: white;
-            "
-          >
-            Manage presets
-          </button>
-        </div>
-
-        <!-- input filed end -->
-        <!-- accordion item -->
-        <div class="accordionWrapper"></div>
-      </div>
+    <button id="blackListsBtn" style="margin-right: 20px">Backlists</button>
+    <button id="favListsBtn">Favorites</button>
+    <div id="blackListEvents"></div>
+    <div id="favoriteListEvents"></div>
+    <div id="noEvent"></div>
+    <div class="">
+      <input id="attendeeInput" type="text" placeholder="" value="10" />
+      <button id="attendeeSearch ">
+        <img
+          src="https://png.pngtree.com/png-vector/20190115/ourmid/pngtree-vector-search-icon-png-image_320926.jpg"
+          alt=""
+          style="width: 1rem"
+        />
+      </button>
     </div>
     <script type="module" src="popup.js"></script>
   </body>

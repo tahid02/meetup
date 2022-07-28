@@ -1,170 +1,106 @@
-// set the preset in local storage when 'add' button is clicked
-const presetName = document.getElementById("preset_name");
-const presetDescription = document.getElementById("preset_description");
-const addPreset = document.getElementById("add_preset");
-const presetCreateInput = document.getElementById("preset_create_input");
-const createPreset = document.getElementById("create_preset");
-const managePreset = document.getElementById("manage_preset");
-const accWrapper = document.getElementsByClassName("accordionWrapper")[0];
+chrome.storage.sync.get("allList", (obj) => {
+  if (obj.allList.length) {
+    const blacklisted = obj.allList.filter((event) =>
+      event.listType.toLowerCase().includes("blacklist")
+    );
+    console.log({ blacklisted });
+    if (blacklisted.length) {
+      blacklisted.map((black) => {
+        const p = document.createElement("p");
 
-presetCreateInput.style.display = "none";
-accWrapper.style.display = "none";
-createPreset.addEventListener("click", function () {
-  presetCreateInput.style.display = "block";
-  createPreset.style.display = "none";
-  accWrapper.style.display = "none";
-});
-managePreset.addEventListener("click", function () {
-  presetCreateInput.style.display = "none";
-  createPreset.style.display = "block";
-  if (accWrapper.style.display === "none") {
-    accWrapper.style.display = "block";
+        p.innerHTML = `<p class="info" style="background-color: wheat;  box-shadow: 5px 10px #888888;">
+                        <div class="groupName">
+                            <div>${black.groupName}</div>
+                            <div> 
+                                <img
+                                src="https://thumbs.dreamstime.com/b/delete-glyph-vector-line-icon-delete-icon-102291534.jpg"
+                                alt=""
+                                style="width: 0.9rem; height: 0.9rem;margin-left:auto"
+                                />
+                            </div>
+                         </div>
+                     </p>`;
+        document.getElementById("blackListEvents").appendChild(p);
+      });
+    } else {
+      document.getElementById("blackListEvents").innerHTML =
+        "no event blacklisted  yet";
+    }
+
+    // fabovrite
+    const favorite = obj.allList.filter((event) =>
+      event.listType.toLowerCase().includes("favorite")
+    );
+    console.log({ favorite });
+    console.log(favorite.length);
+    if (favorite.length) {
+      favorite.map((fav) => {
+        const p = document.createElement("p");
+        p.innerHTML =
+          p.innerHTML = `<p class="info" style="background-color: wheat;  box-shadow: 5px 10px #888888;">
+                        <div class="groupName">
+                            <div>${fav.groupName}</div>
+                            <div> 
+                                <img
+                                src="https://thumbs.dreamstime.com/b/delete-glyph-vector-line-icon-delete-icon-102291534.jpg"
+                                alt=""
+                                style="width: 0.9rem; height: 0.9rem;margin-left:auto"
+                                />
+                            </div>
+                         </div>
+                     </p>`;
+        document.getElementById("favoriteListEvents").appendChild(p);
+      });
+    } else {
+      document.getElementById("favoriteListEvents").innerHTML =
+        "no favorite event added yet";
+    }
   } else {
-    accWrapper.style.display = "none";
+    document.getElementById("noEvent").innerHTML = "no event added yet";
   }
 });
 
-addPreset.addEventListener("click", function () {
-  console.log("add clicked");
-
-  chrome.storage.sync.get("allPresets", (obj) => {
-    if (obj.allPresets) {
-      console.log({ obj });
-      let current = obj.allPresets;
-      chrome.storage.sync.set(
-        {
-          allPresets: [
-            ...current,
-            {
-              presetName: presetName.value,
-              presetDescription: presetDescription.value,
-            },
-          ],
-        },
-        function () {
-          console.log("hello preset");
-          allPreset();
-        }
-      );
-    } else {
-      console.log("its new");
-      chrome.storage.sync.set(
-        {
-          allPresets: [
-            {
-              presetName: presetName.value,
-              presetDescription: presetDescription.value,
-            },
-          ],
-        },
-        function () {
-          console.log("hello preset");
-          allPreset();
-        }
-      );
-    }
-  });
+document.getElementById("blackListsBtn").addEventListener("click", function () {
+  document.getElementById("favoriteListEvents").style.display = "none";
+  document.getElementById("blackListEvents").style.display = "block";
+  document.getElementById("blackListsBtn").style.backgroundColor = "#f65858";
+  document.getElementById("favListsBtn").style.backgroundColor = "inherit";
 });
-function allPreset() {
-  // get and show the presets
-  chrome.storage.sync.get("allPresets", (obj) => {
-    const wrapper = document.querySelector(".accordionWrapper");
-    wrapper.innerHTML = "";
-    if (obj.allPresets.length) {
-      // show all preset in accordion
-      console.log(obj.allPresets);
-      // create the accordion item
-      for (let index = 0; index < obj.allPresets.length; index++) {
-        const accItemDiv = document.createElement("div");
+document.getElementById("favListsBtn").addEventListener("click", function () {
+  document.getElementById("favoriteListEvents").style.display = "block";
+  document.getElementById("blackListEvents").style.display = "none";
+  document.getElementById("favListsBtn").style.backgroundColor = "#f65858";
+  document.getElementById("blackListsBtn").style.backgroundColor = "inherit";
+});
 
-        accItemDiv.innerHTML = `<div class='${
-          index == 0 ? "accordionItem open" : "accordionItem close"
-        }'>
-                              <h2 
-                                class="accordionItemHeading" onclick='${toggleItem}' 
-                                style="display: flex;justify-content: space-between;"
-                              >
-                                <span> ${
-                                  obj.allPresets[index].presetName
-                                }</span>  
-                                
-                                  <img 
-                                    src="https://spng.pngfind.com/pngs/s/99-992375_png-file-delete-icon-svg-transparent-png.png"
-                                    alt="delete" 
-                                    style="width:15px;height:15px"
-                                    class="accordionDelete"
-                                  />                            
-                              </h2>
-                              <div class="accordionItemContent">
-                                <button class="copy_cover_letter">copy</button>
-                                <p style="font-size: 14px;
-                                font-weight: 400;">
-                                ${obj.allPresets[index].presetDescription}
-                                </p>
-                              </div>
-                            </div>  `;
-        wrapper.appendChild(accItemDiv);
-      }
+// setInterval(function () {
+//   var z = document.getElementsByClassName(
+//     "oajrlxb2 gs1a9yip g5ia77u1 mtkw9kbi tlpljxtp qensuy8j ppp5ayq2 goun2846 ccm00jje s44p3ltw mk2mc5f4 rt8b4zig n8ej3o3l agehan2d sk4xxmp2 rq0escxv nhd2j8a9 mg4g778l pfnyh3mw p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x tgvbjcpo hpfvmrgz jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso l9j0dhe7 i1ao9s8h esuyzwwr du4w35lb n00je7tq arfg74bv qs9ysxi8 k77z8yql pq6dq46d btwxx1t3 abiwlrkh p8dawk7l lzcic4wl gokke00a"
+//   );
 
-      // add toggle func in all accordion item's header
-      const accItem = document.getElementsByClassName("accordionItem");
-      const accHD = document.getElementsByClassName("accordionItemHeading");
-      const accDelete = document.getElementsByClassName("accordionDelete");
-      const copyBtn = document.getElementsByClassName("copy_cover_letter");
-      for (let i = 0; i < accHD.length; i++) {
-        accHD[i].addEventListener("click", toggleItem, false);
-        accDelete[i].addEventListener("click", deleteItem, false);
-        copyBtn[i].addEventListener("click", copyText, false);
-      }
-      function toggleItem() {
-        const itemClass = this.parentNode.className;
-        for (let i = 0; i < accItem.length; i++) {
-          accItem[i].className = "accordionItem close";
-        }
-        if (itemClass == "accordionItem close") {
-          this.parentNode.className = "accordionItem open";
-        }
-      }
-      // delete a preset
-      function deleteItem(e) {
-        // grab the item
-        const selectedDeleteItem = e.target.parentNode.parentNode;
-        // item heading
-        const selectedHD = selectedDeleteItem.getElementsByClassName(
-          "accordionItemHeading"
-        )[0].innerText;
+//   let lastScrollHeight = 0;
+//   const sh = document.documentElement.scrollHeight;
+//   for (let i = 0; i < z.length; i++) {
+//     z[i].click();
+//   }
+//   if (sh != lastScrollHeight) {
+//     lastScrollHeight = sh;
+//     document.documentElement.scrollTop = sh;
+//   }
+// }, 5000);
 
-        // get the allpresets from storage then delete item by filtering  it and set new filtered presets
-        chrome.storage.sync.get("allPresets", (obj) => {
-          if (obj.allPresets) {
-            console.log({ obj });
-            let current = obj.allPresets;
-            const filteredPresets = current.filter((pre) => {
-              return pre.presetName.trim() !== selectedHD.trim();
-            });
-            console.log({ filteredPresets });
-            chrome.storage.sync.set(
-              {
-                allPresets: filteredPresets,
-              },
-              function () {
-                selectedDeleteItem.remove();
-              }
-            );
-          }
-        });
-      }
+// for (let i = 0; i < z.length; i++) {
+//   z[i].click();
+// }
 
-      // copy to clipboard
-      function copyText(e) {
-        const clickedCopyBtn =
-          e.target.parentNode.parentNode.getElementsByTagName("p")[0].innerText;
-        console.log({ clickedCopyBtn });
-        navigator.clipboard.writeText(clickedCopyBtn);
-      }
-    } else {
-      wrapper.innerHTML = `<p style="text-align:center;font-size:14px"> "No preset added yet"</p>`;
-    }
-  });
-}
-allPreset();
+// var z = document.getElementsByClassName(
+//   "oajrlxb2 gs1a9yip g5ia77u1 mtkw9kbi tlpljxtp qensuy8j ppp5ayq2 goun2846 ccm00jje s44p3ltw mk2mc5f4 rt8b4zig n8ej3o3l agehan2d sk4xxmp2 rq0escxv nhd2j8a9 mg4g778l pfnyh3mw p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x tgvbjcpo hpfvmrgz jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso l9j0dhe7 i1ao9s8h esuyzwwr du4w35lb n00je7tq arfg74bv qs9ysxi8 k77z8yql pq6dq46d btwxx1t3 abiwlrkh p8dawk7l lzcic4wl gokke00a"
+// );
+// let post = 0;
+// let like = setInterval(() => {
+//   z[post].click();
+//   post++;
+// }, 5000);
+// setTimeout(() => {
+//   clearInterval(like)
+// },z.length*5000);
