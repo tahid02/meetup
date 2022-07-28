@@ -242,12 +242,12 @@ function myMain(evt) {
     sendResponse
   ) {
     // listen for messages sent from background.js
-    if (request.message === "hello!") {
+    if (request.message === "helo!") {
       console.log(request.url); // new url is now in content scripts!
       location.reload();
       return false;
     }
   });
   // const dateBtn = document.getElementById("day-filter-drop-down");
-  // dateBtn.addEventListener("click", myMain);
+  // dateBtn.addEventListener("click", myMain)
 })();
