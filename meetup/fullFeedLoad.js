@@ -1,3 +1,18 @@
+// /////////////////////////////////after feed loaded////////////////
+
+/////////////////////////////////////////////////////////////////////// modify event ui ///////////////////////
+const changeEventUI = (eventElement) => {
+  const { noOfAttendee, isBlackListed, isFavorite } = eventInfo;
+  if (noOfAttendee < document.getElementById("attendeeInput").value) {
+    eventElement.style.display = "none";
+  }
+  if (isFavorite) {
+    eventElement.style.border = "5px solid yellow";
+  }
+  if (isBlackListed) {
+    eventElement.style.border = "5px solid red";
+  }
+};
 /////////////////////////////////////////////////////////////////////// create  btn ///////////////////////
 const createButton = (btnType, eventElement, eventInfo) => {
   const { groupName, isBlackListed, isFavorite } = eventInfo;
@@ -9,37 +24,32 @@ const createButton = (btnType, eventElement, eventInfo) => {
   btnElement.style.borderRadius = "40px ";
   btnElement.style.color = "white ";
   btnElement.style.marginRight = ".5rem";
-  console.log("fav", btnType.toLowerCase().includes("favorite"));
-  console.log("black", btnType.toLowerCase().includes("blacklist"));
-
   if (btnType.toLowerCase().includes("favorite")) {
     btnElement.setAttribute("class", "favoriteBtn");
-    btnElement.addEventListener("click", (e) => {
-      console.log(e.target.value);
-    });
-    console.log({ isFavorite });
-    if (!isFavorite) {
+    btnElement.addEventListener("click", (e) =>
+      setFavoriteList(e, eventElement, groupName)
+    );
+    if (isFavorite) {
       btnElement.value = "Add to Favorite";
-      btnElement.textContent = "Add to Favorite";
     } else {
       btnElement.value = "Remove from Favorite";
-      btnElement.textContent = "Remove from Favorite";
     }
   } else if (btnType.toLowerCase().includes("blacklist")) {
     btnElement.setAttribute("class", "blacklistBtn");
-    if (!isBlackListed) {
-      btnElement.value = "Add to blacklist";
-      btnElement.textContent = "Add to blacklist";
+    if (isBlackListed) {
+      btnElement.value = "Add to backlist";
     } else {
-      btnElement.value = "Remove from blacklist";
-      btnElement.textContent = "Remove from blacklist";
+      btnElement.value = "Remove from backlist";
     }
   }
 
+  btnElement.appendChild(buttonText);
+
   return btnElement;
 };
+/////////////////////////////////////////////////////////////////////// create add and favorite btn ///////////////////////
 const createAddAndFavoriteBtn = (eventElement, eventInfo) => {
-  // console.log("hello create btn");
+  console.log("hello create btn");
   const btnDiv = document.createElement("div");
   btnDiv.style.display = "flex";
   btnDiv.style.justifyContent = "end";
@@ -51,16 +61,13 @@ const createAddAndFavoriteBtn = (eventElement, eventInfo) => {
   btnDiv.appendChild(BlackBtn);
   eventElement.appendChild(btnDiv);
 };
-/////////////////////////////////////////////////////////////////////// remove lower attendee events ///////////////////////
-
-function removeLowerAttendeeEvent(eventElement, noOfAttendee) {
-  console.log({ noOfAttendee });
+//////////////////////////////////////////////////////////////////////fdf df /////////////////////
+function removeLoserAttendeeEvent(eventElement, noOfAttendee) {
   if (noOfAttendee < 10) {
     eventElement.style.border = "5px solid blue";
   }
 }
-/////////////////////////////////////////////////////////////////////// get the event info  ///////////////////////
-
+//////////////////////////////////////////////////////////////////////fdf df /////////////////////
 function getEventInfo(eventElement, obj) {
   const { favoriteList, blackList } = obj.allList;
   //  group name
@@ -71,36 +78,29 @@ function getEventInfo(eventElement, obj) {
   // no of  attendee
   const noOfAttendee =
     eventElement.querySelectorAll(".hidden").length < 3
-      ? eventElement.querySelectorAll(".hidden")[1].innerText.split(" ")[0]
-      : eventElement.querySelectorAll(".hidden")[2].innerText.split(" ")[0];
+      ? eventElement.querySelectorAll(".hidden")[1].innerText
+      : eventElement.querySelectorAll(".hidden")[2].innerText;
   let isFavorite = favoriteList.indexOf(groupName) > -1 || false;
   let isBlackListed = blackList.indexOf(groupName) > -1 || false;
 
-  return {
-    groupName,
-    isFavorite,
-    isBlackListed,
-    noOfAttendee: parseInt(noOfAttendee),
-  };
+  return { groupName, noOfAttendee, isFavorite, isBlackListed };
 }
-/////////////////////////////////////////////////////////////////////// manipulate the event ui///////////////////////
+///////////////////////////////////////////////////////////////////////main events task ///////////////////////
 
 const manipulateEvents = (obj) => {
   const allEvents =
     document.getElementById("main").childNodes[0].childNodes[1].childNodes[0]
       .childNodes[0].childNodes[0];
   let noOfEvents = allEvents.children.length;
-  let eventInfo = {};
 
   for (let i = 0; i <= noOfEvents; i++) {
     const eventElement = allEvents.childNodes[i];
-    eventInfo = getEventInfo(eventElement, obj);
+    const eventInfo = getEventInfo(eventElement, obj);
     removeLowerAttendeeEvent(eventElement, eventInfo.noOfAttendee);
     createAddAndFavoriteBtn(eventElement, eventInfo);
-    // do action when btn is clicked
+    changeEventUI(eventElement, eventInfo);
   }
 };
-/////////////////////////////////////////////////////////////////////// check if full feed is loaded ///////////////////////
 
 function isInViewport(element) {
   const rect = element.getBoundingClientRect();
@@ -112,29 +112,34 @@ function isInViewport(element) {
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 }
-/////////////////////////////////////////////////////////////////////// main func to execute ///////////////////////
 
-const myMain = () => {
-  const autoLoad = setInterval(function () {
-    let lastScrollHeight = 0;
-    const sh = document.documentElement.scrollHeight;
-    const allLoaded = isInViewport(document.getElementById("main_footer"));
-    if (sh != lastScrollHeight) {
-      lastScrollHeight = sh;
-      document.documentElement.scrollTop = sh;
-    }
-    if (allLoaded) {
-      console.log("all loaded");
-      clearInterval(autoLoad);
-      window.scrollTo(0, 0);
-      chrome.storage.sync.get("allList", (obj) => {
-        console.log({ obj });
-        manipulateEvents(obj);
-      });
-    }
-  }, 5000);
-};
+const autoLoad = setInterval(function () {
+  let lastScrollHeight = 0;
+  const sh = document.documentElement.scrollHeight;
+  const allLoaded = isInViewport(document.getElementById("main_footer"));
+  if (sh != lastScrollHeight) {
+    lastScrollHeight = sh;
+    document.documentElement.scrollTop = sh;
+  }
+  if (allLoaded) {
+    clearInterval(autoLoad);
+    chrome.storage.sync.get("allList", (obj) => {
+      manipulateEvents(obj);
+    });
+  }
+}, 5000);
 
-(() => {
-  window.addEventListener("load", myMain, false);
-})();
+// empty storage
+// chrome.storage.sync.set(
+//   {
+//     allList: {
+//       favoriteList: [],
+//       blackList: [],
+//     },
+//   },
+//   function () {
+//     chrome.storage.sync.get("allList", function (obj) {
+//       console.log({ obj });
+//     });
+//   }
+// );
