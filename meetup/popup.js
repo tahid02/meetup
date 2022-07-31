@@ -1,59 +1,103 @@
 chrome.storage.sync.get("allList", (obj) => {
-  if (obj.allList.length) {
-    const blacklisted = obj.allList.filter((event) =>
-      event.listType.toLowerCase().includes("blacklist")
-    );
-    console.log({ blacklisted });
-    if (blacklisted.length) {
-      blacklisted.map((black) => {
+  document.getElementById("favListsBtn").click(); ///// by default . only favorites will be displayed
+  if (obj.allList) {
+    const { blackList, favoriteList } = obj.allList;
+    if (blackList.length) {
+      blackList.map((black) => {
         const p = document.createElement("p");
 
         p.innerHTML = `<p class="info" style="background-color: wheat;  box-shadow: 5px 10px #888888;">
                         <div class="groupName">
-                            <div>${black.groupName}</div>
+                            <div>${black}</div>
                             <div> 
                                 <img
-                                src="https://thumbs.dreamstime.com/b/delete-glyph-vector-line-icon-delete-icon-102291534.jpg"
+                                src="delete-icon.png"
                                 alt=""
                                 style="width: 0.9rem; height: 0.9rem;margin-left:auto"
                                 />
                             </div>
                          </div>
                      </p>`;
+        p.getElementsByTagName("img")[0].addEventListener(
+          "click",
+          function (e) {
+            const listToRemove = e.target.parentNode.parentNode.parentNode;
+            chrome.storage.sync.get("allList", (obj) => {
+              let { favoriteList, blackList } = obj.allList;
+
+              const newBlackList = blackList.filter(
+                (black) => !black.includes(listToRemove.innerText)
+              );
+              console.log({ newBlackList });
+              chrome.storage.sync.set(
+                {
+                  allList: {
+                    favoriteList,
+                    blackList: newBlackList,
+                  },
+                },
+                function () {
+                  listToRemove.style.display = "none";
+                }
+              );
+            });
+          }
+        );
         document.getElementById("blackListEvents").appendChild(p);
       });
     } else {
       document.getElementById("blackListEvents").innerHTML =
-        "no event blacklisted  yet";
+        "no group is blacklisted  yet";
     }
 
     // fabovrite
-    const favorite = obj.allList.filter((event) =>
-      event.listType.toLowerCase().includes("favorite")
-    );
-    console.log({ favorite });
-    console.log(favorite.length);
-    if (favorite.length) {
-      favorite.map((fav) => {
+
+    if (favoriteList.length) {
+      favoriteList.map((fav) => {
         const p = document.createElement("p");
-        p.innerHTML =
-          p.innerHTML = `<p class="info" style="background-color: wheat;  box-shadow: 5px 10px #888888;">
+
+        p.innerHTML = `<p id="" class="info" style="background-color: wheat;  box-shadow: 5px 10px #888888;">
                         <div class="groupName">
-                            <div>${fav.groupName}</div>
+                            <div>${fav}</div>
                             <div> 
                                 <img
-                                src="https://thumbs.dreamstime.com/b/delete-glyph-vector-line-icon-delete-icon-102291534.jpg"
+                                src="delete-icon.png"
                                 alt=""
                                 style="width: 0.9rem; height: 0.9rem;margin-left:auto"
                                 />
                             </div>
                          </div>
                      </p>`;
+        p.getElementsByTagName("img")[0].addEventListener(
+          "click",
+          function (e) {
+            const listToRemove = e.target.parentNode.parentNode.parentNode;
+            chrome.storage.sync.get("allList", (obj) => {
+              let { favoriteList, blackList } = obj.allList;
+
+              const newFavList = favoriteList.filter(
+                (fav) => !fav.includes(listToRemove.innerText)
+              );
+              console.log({ newFavList });
+              chrome.storage.sync.set(
+                {
+                  allList: {
+                    favoriteList: newFavList,
+                    blackList,
+                  },
+                },
+                function () {
+                  listToRemove.style.display = "none";
+                }
+              );
+            });
+          }
+        );
         document.getElementById("favoriteListEvents").appendChild(p);
       });
     } else {
       document.getElementById("favoriteListEvents").innerHTML =
-        "no favorite event added yet";
+        "no favorite group added yet";
     }
   } else {
     document.getElementById("noEvent").innerHTML = "no event added yet";
