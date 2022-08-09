@@ -24,6 +24,7 @@ function filterAttendee(e, allEvents) {
     ) {
       eventElement.style.display = "none";
     } else {
+      console.log("displayed");
       eventElement.style.display = "block";
     }
   }
@@ -216,6 +217,8 @@ const createButton = (btnType, eventElement, eventInfo) => {
   return btnElement;
 };
 const createAddAndFavoriteBtn = (eventElement, eventInfo) => {
+  console.log("btn creates");
+  console.log("event", eventElement);
   const btnDiv = document.createElement("div");
   btnDiv.style.display = "flex";
   btnDiv.style.justifyContent = "end";
@@ -240,9 +243,9 @@ function getEventInfo(eventElement, obj) {
   const { favoriteList, blackList } = obj.allList;
   //  group name
   const groupName = eventElement
-    .getElementsByTagName("p")[1]
-    .innerText.split("\n")[1]
-    .split("•")[0];
+    ?.getElementsByTagName("p")[1]
+    .innerText?.split("\n")[1]
+    ?.split("•")[0];
   // no of  attendee
   // const noOfAttendee =
   //   eventElement.querySelectorAll(".hidden").length < 3
@@ -272,7 +275,9 @@ const manipulateEvents = (obj) => {
   let noOfEvents = allEvents.children.length;
   let eventInfo = {};
   // now one after another call these function for each element
-  for (let i = 0; i <= noOfEvents; i++) {
+  console.log("no of events", noOfEvents);
+  for (let i = 0; i < noOfEvents; i++) {
+    console.log("i", i);
     const eventElement = allEvents.childNodes[i];
     eventInfo = getEventInfo(eventElement, obj); // groupName, isFavorite,isBlackListed,noOfAttendee
     removeLowerAttendeeEvent(eventElement, eventInfo.noOfAttendee); // check the events(elements) no of attendee and if its lower then the input filed in filter then remove the event
@@ -299,26 +304,59 @@ function isInViewport(element) {
 /////////////////////////////////////////////////////////////////////// main func to execute ///////////////////////
 
 const myMain = () => {
+  let scrollHState = 0;
+  let scrollTopState = 0;
   const autoLoad = setInterval(function () {
-    let lastScrollHeight = 0;
-    const sh = document.documentElement.scrollHeight;
-    const allLoaded = isInViewport(document.getElementById("main_footer"));
-    //  scroll automatically
-    if (sh != lastScrollHeight) {
-      lastScrollHeight = sh;
-      document.documentElement.scrollTop = sh;
-    }
-    // stop automatically scrolling and manipulate the events
-    if (allLoaded) {
+    // console.log(document.documentElement.scrollTop);
+    // console.log(document.body.scrollHeight);
+    // console.log(scrollHState);
+    // console.log(scrollTopState);
+    // console.log("fdf");
+    if (
+      scrollHState == document.body.scrollHeight &&
+      scrollTopState == document.documentElement.scrollTop
+    ) {
       clearInterval(autoLoad);
       window.scrollTo(0, 0);
       createAttendeeInputDiv();
+
       chrome.storage.sync.get("allList", (obj) => {
         manipulateEvents(obj);
       });
+    } else if (document.body.scrollTop < document.body.scrollHeight) {
+      scrollHState = document.body.scrollHeight;
+      scrollTopState = document.documentElement.scrollTop;
+      document.documentElement.scrollTop = document.body.scrollHeight;
     }
   }, 5000);
 };
+
+// const myMain = () => {
+//   const autoLoad = setInterval(function () {
+//     let lastScrollHeight = 0;
+//     console.log("last", lastScrollHeight);
+//     console.log("sh", document.documentElement.scrollHeight);
+//     const sh = document.documentElement.scrollHeight - 531;
+//     const allLoaded = isInViewport(document.getElementById("main_footer"));
+//     //  scroll automatically
+//     console.log("hello", sh, lastScrollHeight);
+//     if (sh != lastScrollHeight) {
+//       lastScrollHeight = sh;
+//       console.log("if last", lastScrollHeight);
+//       document.documentElement.scrollTop = sh;
+//     }
+//     // stop automatically scrolling and manipulate the events
+//     if (allLoaded) {
+// clearInterval(autoLoad);
+// window.scrollTo(0, 0);
+// createAttendeeInputDiv();
+
+// chrome.storage.sync.get("allList", (obj) => {
+//   manipulateEvents(obj);
+// });
+//     }
+//   }, 5000);
+// };
 
 (() => {
   window.addEventListener("load", myMain, false);
@@ -331,6 +369,7 @@ const myMain = () => {
     if (request.message === "hello!") {
       console.log(request.url); // new url is now in content scripts!
       location.reload();
+
       return false;
     }
   });
